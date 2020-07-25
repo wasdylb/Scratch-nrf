@@ -34,7 +34,7 @@ namespace ScratchMore {
     void startScratchMoreService() {
         if (NULL != _pService) return;
 
-        _pService = new MbitMoreService(uBit);
+        _pService = new ScratchMoreService(uBit);
         create_fiber(notifyScratch);
     }
     // void startScratchMoreService(Action handler) {
