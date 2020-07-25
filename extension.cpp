@@ -31,6 +31,12 @@ namespace ScratchMore {
     * The handler can call ``setscratchMoreSlot`` to send any data to Scratch.
     */
     //%
+    void startScratchMoreService() {
+        if (NULL != _pService) return;
+
+        _pService = new MbitMoreService(uBit);
+        create_fiber(notifyScratch);
+    }
     // void startScratchMoreService(Action handler) {
     //     if (NULL != _pService) return;
 
@@ -39,12 +45,6 @@ namespace ScratchMore {
     //     pxt::incr(_handler);
     //     create_fiber(notifyScratch);
     // }
-    void startScratchMoreService() {
-        if (NULL != _pService) return;
-
-        _pService = new MbitMoreService(uBit);
-        create_fiber(notifyScratch);
-    }
 
     // /**
     // * Set slot value.
