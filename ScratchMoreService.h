@@ -35,12 +35,12 @@ public:
   /**
    * Set value to Slots.
    */
-  // void setSlot(int slot, int value);
+  void setSlot(int slot, int value);
 
   /**
    * Get value to Slots.
    */
-  // int getSlot(int slot);
+  int getSlot(int slot);
 
   /**
     * Callback. Invoked when any of our attributes are written via BLE.

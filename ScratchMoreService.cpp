@@ -478,22 +478,22 @@ void ScratchMoreService::notify()
  * Set value to Slots.
  * slot (0, 1, 2, 3)
  */
-// void ScratchMoreService::setSlot(int slotIndex, int value)
-// {
-//   // value (-32768 to 32767) is sent as int16_t little-endian.
-//   int16_t slotData = (int16_t)value;
-//   memcpy(&(txBuffer02[10 + (slotIndex * 2)]), &slotData, 2);
-//   slots[slotIndex] = slotData;
-// }
+void ScratchMoreService::setSlot(int slotIndex, int value)
+{
+  // value (-32768 to 32767) is sent as int16_t little-endian.
+  int16_t slotData = (int16_t)value;
+  memcpy(&(txBuffer02[10 + (slotIndex * 2)]), &slotData, 2);
+  slots[slotIndex] = slotData;
+}
 
 /**
  * Get value of a Slot.
  * slot (0, 1, 2, 3)
  */
-// int ScratchMoreService::getSlot(int slotIndex)
-// {
-//   return (int)(slots[slotIndex]);
-// }
+int ScratchMoreService::getSlot(int slotIndex)
+{
+  return (int)(slots[slotIndex]);
+}
 
 void ScratchMoreService::onBLEConnected(MicroBitEvent e)
 {
