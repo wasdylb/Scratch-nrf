@@ -95,8 +95,9 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
     if (data[0] == ScratchBLECommand::CMD_DISPLAY_TEXT)
     {
       char text[params->len];
-      memcpy(text, &(data[1]), (params->len) - 1);
-      text[(params->len) - 1] = '\0';
+      memcpy(text, &(data[1]), (params->len));
+      // memcpy(text, &(data[1]), (params->len) - 1);
+      // text[(params->len) - 1] = '\0';
       ManagedString mstr(text);
       uBit.display.scroll(mstr, 120); // Interval is corresponding with the Scratch extension.
     }
@@ -167,7 +168,7 @@ void ScratchMoreService::onButtonChanged(MicroBitEvent e)
   }
   if (e.value == MICROBIT_BUTTON_EVT_HOLD)
   {
-    state = 5;
+    state = 2;
   }
   // if (e.value == MICROBIT_BUTTON_EVT_CLICK)
   // {
@@ -287,13 +288,6 @@ void ScratchMoreService::updateAnalogValues()
       analogValues[i] = (uint16_t)uBit.io.pin[analogIn[i]].getAnalogValue();
     }
   }
-
-  //// It will cause flickering LED.
-  // uBit.display.disable();
-  // analogValues[3] = (uint16_t)uBit.io.P3.getAnalogValue();
-  // analogValues[4] = (uint16_t)uBit.io.P4.getAnalogValue();
-  // analogValues[5] = (uint16_t)uBit.io.P10.getAnalogValue();
-  // uBit.display.enable();
 }
 
 void ScratchMoreService::setInputMode(int pinIndex)
@@ -484,27 +478,28 @@ void ScratchMoreService::notify()
  * Set value to Slots.
  * slot (0, 1, 2, 3)
  */
-void ScratchMoreService::setSlot(int slotIndex, int value)
-{
-  // value (-32768 to 32767) is sent as int16_t little-endian.
-  int16_t slotData = (int16_t)value;
-  memcpy(&(txBuffer02[10 + (slotIndex * 2)]), &slotData, 2);
-  slots[slotIndex] = slotData;
-}
+// void ScratchMoreService::setSlot(int slotIndex, int value)
+// {
+//   // value (-32768 to 32767) is sent as int16_t little-endian.
+//   int16_t slotData = (int16_t)value;
+//   memcpy(&(txBuffer02[10 + (slotIndex * 2)]), &slotData, 2);
+//   slots[slotIndex] = slotData;
+// }
 
 /**
  * Get value of a Slot.
  * slot (0, 1, 2, 3)
  */
-int ScratchMoreService::getSlot(int slotIndex)
-{
-  return (int)(slots[slotIndex]);
-}
+// int ScratchMoreService::getSlot(int slotIndex)
+// {
+//   return (int)(slots[slotIndex]);
+// }
 
 void ScratchMoreService::onBLEConnected(MicroBitEvent e)
 {
   MicroBitImage yes("0,0,0,0,0\n0,0,0,0,255\n0,0,0,255,0\n255,0,255,0,0\n0,255,0,0,0\n");
   uBit.display.scrollAsync(yes);
+  uBit.sleep(500);
   uBit.display.stopAnimation(); // To stop display friendly name.
 }
 
