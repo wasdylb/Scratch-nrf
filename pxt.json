@@ -1,5 +1,5 @@
 {
-    "name": "pxt-scratch-microbit-more",
+    "name": "Scratch-nrf",
     "version": "0.4.2",
     "description": "",
     "dependencies": {
@@ -21,7 +21,7 @@
     "public": false,
     "yotta": {
         "dependencies": {
-            "microbit": "yokobond/microbit#mbit-more"
+            "microbit": "wasdylb/microbit#mbit-more"
         },
         "config": {
             "microbit-dal": {
