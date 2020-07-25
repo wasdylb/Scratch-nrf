@@ -2,7 +2,7 @@
 
 
 
-    //% color=#FF9900 weight=95 icon="\uf1b0"
+    //% color=#FF0000 weight=95 icon="\uf1b0"
 declare namespace ScratchMore {
 
     /**

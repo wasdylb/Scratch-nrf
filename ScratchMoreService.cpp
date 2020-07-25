@@ -15,8 +15,9 @@ int analogIn[] = {0, 1, 2};
 ScratchMoreService::ScratchMoreService(MicroBit &_uBit)
     : uBit(_uBit)
 {
-  // Calibrate the compass before start bluetooth service. 
-  if (!uBit.compass.isCalibrated()) {
+  // Calibrate the compass before start bluetooth service.
+  if (!uBit.compass.isCalibrated())
+  {
     uBit.compass.calibrate();
   }
 
@@ -95,7 +96,7 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
     {
       char text[params->len];
       memcpy(text, &(data[1]), (params->len) - 1);
-      text[(params->len) -1] = '\0';
+      text[(params->len) - 1] = '\0';
       ManagedString mstr(text);
       uBit.display.scroll(mstr, 120); // Interval is corresponding with the Scratch extension.
     }
@@ -110,6 +111,7 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
         }
       }
     }
+    /*
     else if (data[0] == ScratchBLECommand::CMD_PIN_INPUT)
     {
       setInputMode(data[1]);
@@ -145,6 +147,7 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
       memcpy(&slotValue, &(data[2]), 2);
       setSlot(data[1], slotValue);
     }
+    */
   }
 }
 
@@ -164,7 +167,7 @@ void ScratchMoreService::onButtonChanged(MicroBitEvent e)
   }
   if (e.value == MICROBIT_BUTTON_EVT_HOLD)
   {
-    state = 2;
+    state = 5;
   }
   // if (e.value == MICROBIT_BUTTON_EVT_CLICK)
   // {
@@ -190,14 +193,15 @@ void ScratchMoreService::onButtonChanged(MicroBitEvent e)
 
 void ScratchMoreService::onAccelerometerChanged(MicroBitEvent)
 {
-  if (uBit.accelerometer.getGesture() == MICROBIT_ACCELEROMETER_EVT_SHAKE)
-  {
-    gesture = gesture | 1;
-  }
-  if (uBit.accelerometer.getGesture() == MICROBIT_ACCELEROMETER_EVT_FREEFALL)
-  {
-    gesture = gesture | 1 << 1;
-  }
+  // if (uBit.accelerometer.getGesture() == MICROBIT_ACCELEROMETER_EVT_SHAKE)
+  // {
+  //   gesture = gesture | 1;
+  // }
+  // if (uBit.accelerometer.getGesture() == MICROBIT_ACCELEROMETER_EVT_FREEFALL)
+  // {
+  //   gesture = gesture | 1 << 1;
+  // }
+  gesture = 0;
 }
 
 /**
@@ -205,17 +209,18 @@ void ScratchMoreService::onAccelerometerChanged(MicroBitEvent)
  */
 int ScratchMoreService::normalizeCompassHeading(int heading)
 {
-  if (uBit.accelerometer.getZ() > 0)
-  {
-    if (heading <= 180)
-    {
-      heading = 180 - heading;
-    }
-    else
-    {
-      heading = 360 - (heading - 180);
-    }
-  }
+  // if (uBit.accelerometer.getZ() > 0)
+  // {
+  //   if (heading <= 180)
+  //   {
+  //     heading = 180 - heading;
+  //   }
+  //   else
+  //   {
+  //     heading = 360 - (heading - 180);
+  //   }
+  // }
+  heading = 0;
   return heading;
 }
 
@@ -241,16 +246,17 @@ int ScratchMoreService::convertToTilt(float radians)
 
 void ScratchMoreService::updateGesture()
 {
-  int old[] = {lastAcc[0], lastAcc[1], lastAcc[2]};
-  lastAcc[0] = uBit.accelerometer.getX();
-  lastAcc[1] = uBit.accelerometer.getY();
-  lastAcc[2] = uBit.accelerometer.getZ();
-  int threshold = 100;
-  if ((abs(lastAcc[0] - old[0]) > threshold) || (abs(lastAcc[1] - old[1]) > threshold) || (abs(lastAcc[2] - old[2]) > threshold))
-  {
-    // Moved
-    gesture = gesture | (1 << 2);
-  }
+  // int old[] = {lastAcc[0], lastAcc[1], lastAcc[2]};
+  // lastAcc[0] = uBit.accelerometer.getX();
+  // lastAcc[1] = uBit.accelerometer.getY();
+  // lastAcc[2] = uBit.accelerometer.getZ();
+  // int threshold = 100;
+  // if ((abs(lastAcc[0] - old[0]) > threshold) || (abs(lastAcc[1] - old[1]) > threshold) || (abs(lastAcc[2] - old[2]) > threshold))
+  // {
+  //   // Moved
+  //   gesture = gesture | (1 << 2);
+  // }
+   gesture = 0;
 }
 
 void ScratchMoreService::resetGesture()
@@ -324,13 +330,14 @@ void ScratchMoreService::setServoValue(int pinIndex, int angle, int range, int c
 void ScratchMoreService::composeDefaultData(uint8_t *buff)
 {
   updateDigitalValues();
-  updateGesture();
 
   // Tilt value is sent as int16_t big-endian.
-  int16_t tiltX = (int16_t)convertToTilt(uBit.accelerometer.getRollRadians());
+  // int16_t tiltX = (int16_t)convertToTilt(uBit.accelerometer.getRollRadians());
+  int16_t tiltX = 0;
   buff[0] = (tiltX >> 8) & 0xFF;
   buff[1] = tiltX & 0xFF;
-  int16_t tiltY = (int16_t)convertToTilt(uBit.accelerometer.getPitchRadians());
+  // int16_t tiltY = (int16_t)convertToTilt(uBit.accelerometer.getPitchRadians());
+  int16_t tiltY = 0;
   buff[2] = (tiltY >> 8) & 0xFF;
   buff[3] = tiltY & 0xFF;
   buff[4] = (uint8_t)buttonAState;
@@ -340,7 +347,7 @@ void ScratchMoreService::composeDefaultData(uint8_t *buff)
   buff[8] = (uint8_t)((digitalValues >> 2) & 1);
   buff[9] = (uint8_t)gesture;
 }
-
+/*
 void ScratchMoreService::composeTxBuffer01()
 {
   composeDefaultData(txBuffer01);
@@ -399,12 +406,36 @@ void ScratchMoreService::composeTxBuffer03()
   // More extension format.
   txBuffer03[19] = 0x03;
 }
+*/
+
+/**
+ * Notify default micro:bit data to Scratch.
+ */
+void MbitMoreService::notifyDefaultData()
+{
+  composeDefaultData(txData);
+  uBit.ble->gattServer().notify(
+      txCharacteristicHandle,
+      (uint8_t *)&txData,
+      sizeof(txData) / sizeof(txData[0]));
+}
 
 /**
   * Notify data to Scratch3
   */
 void ScratchMoreService::notify()
 {
+  if (uBit.ble->gap().getState().connected)
+  {
+    updateGesture();
+    notifyDefaultData();
+    resetGesture();
+  }
+  else
+  {
+    displayFriendlyName();
+  }
+  /*
   if (uBit.ble->gap().getState().connected)
   {
     switch (txDataFormat)
@@ -446,6 +477,7 @@ void ScratchMoreService::notify()
     txDataFormat = 1;
     displayFriendlyName();
   }
+  */
 }
 
 /**
@@ -471,13 +503,14 @@ int ScratchMoreService::getSlot(int slotIndex)
 
 void ScratchMoreService::onBLEConnected(MicroBitEvent e)
 {
+  MicroBitImage yes("0,0,0,0,0\n0,0,0,0,255\n0,0,0,255,0\n255,0,255,0,0\n0,255,0,0,0\n");
+  uBit.display.scrollAsync(yes);
   uBit.display.stopAnimation(); // To stop display friendly name.
 }
 
 void ScratchMoreService::displayFriendlyName()
 {
-  ManagedString suffix(" MORE! ");
-  uBit.display.scrollAsync(uBit.getName() + suffix, 120);
+  uBit.display.scrollAsync(uBit.getName(), 120);
 }
 
 const uint16_t ScratchMoreServiceUUID = 0xf005;
