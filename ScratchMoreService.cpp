@@ -98,8 +98,8 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
       memcpy(text, &(data[1]), (params->len));
       // memcpy(text, &(data[1]), (params->len) - 1);
       // text[(params->len) - 1] = '\0';
-      ManagedString mstr(text);
-      uBit.display.scroll(mstr, 120); // Interval is corresponding with the Scratch extension.
+      // ManagedString mstr(text);
+      uBit.display.scroll(text, 120); // Interval is corresponding with the Scratch extension.
     }
     else if (data[0] == ScratchBLECommand::CMD_DISPLAY_LED)
     {
@@ -497,8 +497,8 @@ int ScratchMoreService::getSlot(int slotIndex)
 
 void ScratchMoreService::onBLEConnected(MicroBitEvent e)
 {
-  MicroBitImage yes("0,0,0,0,0\n0,0,0,0,255\n0,0,0,255,0\n255,0,255,0,0\n0,255,0,0,0\n");
-  uBit.display.scrollAsync(yes);
+  MicroBitImage _connected("0,0,0,0,0\n0,0,0,0,255\n0,0,0,255,0\n255,0,255,0,0\n0,255,0,0,0\n");
+  uBit.display.print(_connected);
   uBit.sleep(500);
   uBit.display.stopAnimation(); // To stop display friendly name.
 }
