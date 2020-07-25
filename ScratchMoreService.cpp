@@ -95,9 +95,9 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
     if (data[0] == ScratchBLECommand::CMD_DISPLAY_TEXT)
     {
       char text[params->len];
-      memcpy(text, &(data[1]), (params->len));
-      // memcpy(text, &(data[1]), (params->len) - 1);
-      // text[(params->len) - 1] = '\0';
+      // memcpy(text, &(data[1]), (params->len));
+      memcpy(text, &(data[1]), (params->len) - 1);
+      text[(params->len) - 1] = '\0';
       ManagedString mstr(text);
       uBit.display.scrollAsync(text, 120); // Interval is corresponding with the Scratch extension.
     }
@@ -170,18 +170,6 @@ void ScratchMoreService::onButtonChanged(MicroBitEvent e)
   {
     state = 2;
   }
-  // if (e.value == MICROBIT_BUTTON_EVT_CLICK)
-  // {
-  //   state = 3;
-  // }
-  // if (e.value == MICROBIT_BUTTON_EVT_LONG_CLICK)
-  // {
-  //   state = 4;
-  // }
-  // if (e.value == MICROBIT_BUTTON_EVT_DOUBLE_CLICK)
-  // {
-  //   state = 6;
-  // }
   if (e.source == MICROBIT_ID_BUTTON_A)
   {
     buttonAState = state;
@@ -194,15 +182,14 @@ void ScratchMoreService::onButtonChanged(MicroBitEvent e)
 
 void ScratchMoreService::onAccelerometerChanged(MicroBitEvent)
 {
-  // if (uBit.accelerometer.getGesture() == MICROBIT_ACCELEROMETER_EVT_SHAKE)
-  // {
-  //   gesture = gesture | 1;
-  // }
-  // if (uBit.accelerometer.getGesture() == MICROBIT_ACCELEROMETER_EVT_FREEFALL)
-  // {
-  //   gesture = gesture | 1 << 1;
-  // }
-  gesture = 0;
+  if (uBit.accelerometer.getGesture() == MICROBIT_ACCELEROMETER_EVT_SHAKE)
+  {
+    gesture = gesture | 1;
+  }
+  if (uBit.accelerometer.getGesture() == MICROBIT_ACCELEROMETER_EVT_FREEFALL)
+  {
+    gesture = gesture | 1 << 1;
+  }
 }
 
 /**
@@ -210,18 +197,17 @@ void ScratchMoreService::onAccelerometerChanged(MicroBitEvent)
  */
 int ScratchMoreService::normalizeCompassHeading(int heading)
 {
-  // if (uBit.accelerometer.getZ() > 0)
-  // {
-  //   if (heading <= 180)
-  //   {
-  //     heading = 180 - heading;
-  //   }
-  //   else
-  //   {
-  //     heading = 360 - (heading - 180);
-  //   }
-  // }
-  heading = 0;
+  if (uBit.accelerometer.getZ() > 0)
+  {
+    if (heading <= 180)
+    {
+      heading = 180 - heading;
+    }
+    else
+    {
+      heading = 360 - (heading - 180);
+    }
+  }
   return heading;
 }
 
@@ -247,17 +233,16 @@ int ScratchMoreService::convertToTilt(float radians)
 
 void ScratchMoreService::updateGesture()
 {
-  // int old[] = {lastAcc[0], lastAcc[1], lastAcc[2]};
-  // lastAcc[0] = uBit.accelerometer.getX();
-  // lastAcc[1] = uBit.accelerometer.getY();
-  // lastAcc[2] = uBit.accelerometer.getZ();
-  // int threshold = 100;
-  // if ((abs(lastAcc[0] - old[0]) > threshold) || (abs(lastAcc[1] - old[1]) > threshold) || (abs(lastAcc[2] - old[2]) > threshold))
-  // {
-  //   // Moved
-  //   gesture = gesture | (1 << 2);
-  // }
-   gesture = 0;
+  int old[] = {lastAcc[0], lastAcc[1], lastAcc[2]};
+  lastAcc[0] = uBit.accelerometer.getX();
+  lastAcc[1] = uBit.accelerometer.getY();
+  lastAcc[2] = uBit.accelerometer.getZ();
+  int threshold = 100;
+  if ((abs(lastAcc[0] - old[0]) > threshold) || (abs(lastAcc[1] - old[1]) > threshold) || (abs(lastAcc[2] - old[2]) > threshold))
+  {
+    // Moved
+    gesture = gesture | (1 << 2);
+  }
 }
 
 void ScratchMoreService::resetGesture()
@@ -326,12 +311,12 @@ void ScratchMoreService::composeDefaultData(uint8_t *buff)
   updateDigitalValues();
 
   // Tilt value is sent as int16_t big-endian.
-  // int16_t tiltX = (int16_t)convertToTilt(uBit.accelerometer.getRollRadians());
-  int16_t tiltX = 0;
+  int16_t tiltX = (int16_t)convertToTilt(uBit.accelerometer.getRollRadians());
+  // int16_t tiltX = 0;
   buff[0] = (tiltX >> 8) & 0xFF;
   buff[1] = tiltX & 0xFF;
-  // int16_t tiltY = (int16_t)convertToTilt(uBit.accelerometer.getPitchRadians());
-  int16_t tiltY = 0;
+  int16_t tiltY = (int16_t)convertToTilt(uBit.accelerometer.getPitchRadians());
+  // int16_t tiltY = 0;
   buff[2] = (tiltY >> 8) & 0xFF;
   buff[3] = tiltY & 0xFF;
   buff[4] = (uint8_t)buttonAState;
@@ -341,66 +326,6 @@ void ScratchMoreService::composeDefaultData(uint8_t *buff)
   buff[8] = (uint8_t)((digitalValues >> 2) & 1);
   buff[9] = (uint8_t)gesture;
 }
-/*
-void ScratchMoreService::composeTxBuffer01()
-{
-  composeDefaultData(txBuffer01);
-
-  updateAnalogValues();
-
-  // analog value (0 to 1024) is sent as uint16_t little-endian.
-  memcpy(&(txBuffer01[10]), &(analogValues[0]), 2);
-  memcpy(&(txBuffer01[12]), &(analogValues[1]), 2);
-  memcpy(&(txBuffer01[14]), &(analogValues[2]), 2);
-
-  // compassHeading angle (0 - 359) is sent as uint16_t little-endian.
-  uint16_t heading = (uint16_t)normalizeCompassHeading(uBit.compass.heading());
-  memcpy(&(txBuffer01[16]), &heading, 2);
-
-  // level of light amount (0-255) is sent as uint8_t.
-  txBuffer01[18] = (uint8_t)uBit.display.readLightLevel();
-
-  // More extension format.
-  txBuffer01[19] = 0x01;
-}
-
-void ScratchMoreService::composeTxBuffer02()
-{
-  composeDefaultData(txBuffer02);
-
-  txBuffer02[18] = 0;
-  for (size_t i = 0; i < 8; i++)
-  {
-    txBuffer02[18] = txBuffer02[18] | (uint8_t)(((digitalValues >> gpio[i]) & 1) << i);
-  }
-
-  // More extension format.
-  txBuffer02[19] = 0x02;
-}
-
-void ScratchMoreService::composeTxBuffer03()
-{
-  composeDefaultData(txBuffer03);
-
-  // Magnetic field strength [micro teslas] is sent as uint16_t little-endian in 03:10.
-  uint16_t magStrength = (uint16_t)(uBit.compass.getFieldStrength() / 1000);
-  memcpy(&(txBuffer03[10]), &magStrength, 2);
-
-  int16_t acc;
-  // Acceleration X [milli-g] is sent as int16_t little-endian in 03:12.
-  acc = (int16_t)(uBit.accelerometer.getX());
-  memcpy(&(txBuffer03[12]), &acc, 2);
-  // Acceleration Y [milli-g] is sent as int16_t little-endian in 03:14.
-  acc = (int16_t)(uBit.accelerometer.getY());
-  memcpy(&(txBuffer03[14]), &acc, 2);
-  // Acceleration Z [milli-g] is sent as int16_t little-endian in 03:16.
-  acc = (int16_t)(uBit.accelerometer.getZ());
-  memcpy(&(txBuffer03[16]), &acc, 2);
-
-  // More extension format.
-  txBuffer03[19] = 0x03;
-}
-*/
 
 /**
  * Notify default micro:bit data to Scratch.
@@ -429,77 +354,31 @@ void ScratchMoreService::notify()
   {
     displayFriendlyName();
   }
-  /*
-  if (uBit.ble->gap().getState().connected)
-  {
-    switch (txDataFormat)
-    {
-    case 1:
-      composeTxBuffer01();
-      uBit.ble->gattServer().notify(
-          txCharacteristicHandle,
-          (uint8_t *)&txBuffer01,
-          sizeof(txBuffer01) / sizeof(txBuffer01[0]));
-      break;
-
-    case 2:
-      composeTxBuffer02();
-      uBit.ble->gattServer().notify(
-          txCharacteristicHandle,
-          (uint8_t *)&txBuffer02,
-          sizeof(txBuffer02) / sizeof(txBuffer02[0]));
-      break;
-
-    case 3:
-      composeTxBuffer03();
-      uBit.ble->gattServer().notify(
-          txCharacteristicHandle,
-          (uint8_t *)&txBuffer03,
-          sizeof(txBuffer03) / sizeof(txBuffer03[0]));
-      break;
-
-    default:
-      break;
-    }
-    resetGesture();
-    txDataFormat++;
-    if (txDataFormat > 3)
-      txDataFormat = 1;
-  }
-  else
-  {
-    txDataFormat = 1;
-    displayFriendlyName();
-  }
-  */
 }
 
 /**
  * Set value to Slots.
  * slot (0, 1, 2, 3)
  */
-void ScratchMoreService::setSlot(int slotIndex, int value)
-{
-  // value (-32768 to 32767) is sent as int16_t little-endian.
-  int16_t slotData = (int16_t)value;
-  memcpy(&(txBuffer02[10 + (slotIndex * 2)]), &slotData, 2);
-  slots[slotIndex] = slotData;
-}
+// void ScratchMoreService::setSlot(int slotIndex, int value)
+// {
+//   // value (-32768 to 32767) is sent as int16_t little-endian.
+//   int16_t slotData = (int16_t)value;
+//   memcpy(&(txBuffer02[10 + (slotIndex * 2)]), &slotData, 2);
+//   slots[slotIndex] = slotData;
+// }
 
 /**
  * Get value of a Slot.
  * slot (0, 1, 2, 3)
  */
-int ScratchMoreService::getSlot(int slotIndex)
-{
-  return (int)(slots[slotIndex]);
-}
+// int ScratchMoreService::getSlot(int slotIndex)
+// {
+//   return (int)(slots[slotIndex]);
+// }
 
 void ScratchMoreService::onBLEConnected(MicroBitEvent e)
 {
-  // MicroBitImage _connected("0,0,0,0,0\n0,0,0,0,255\n0,0,0,255,0\n255,0,255,0,0\n0,255,0,0,0\n");
-  // uBit.display.print(_connected);
-  // uBit.sleep(500);
   uBit.display.stopAnimation(); // To stop display friendly name.
 }
 

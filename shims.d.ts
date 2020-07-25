@@ -10,19 +10,19 @@ declare namespace ScratchMore {
      * The handler can call ``setscratchMoreSlot`` to send any data to Scratch.
      */
     //% shim=ScratchMore::startScratchMoreService
-    function startScratchMoreService(handler: () => void): void;
+    function startScratchMoreService(): void;
 
     /**
      * Set slot value.
      */
-    //% shim=ScratchMore::setScratchMoreSlot
-    function setScratchMoreSlot(slot: Slot, value: int32): void;
+    // //% shim=ScratchMore::setScratchMoreSlot
+    // function setScratchMoreSlot(slot: Slot, value: int32): void;
 
     /**
      * Get slot value. 
      */
-    //% shim=ScratchMore::getScratchMoreSlot
-    function getScratchMoreSlot(slot: Slot): int32;
+    // //% shim=ScratchMore::getScratchMoreSlot
+    // function getScratchMoreSlot(slot: Slot): int32;
 }
 
 // Auto-generated. Do not edit. Really.

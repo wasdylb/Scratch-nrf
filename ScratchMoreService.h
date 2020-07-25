@@ -35,12 +35,12 @@ public:
   /**
    * Set value to Slots.
    */
-  void setSlot(int slot, int value);
+  // void setSlot(int slot, int value);
 
   /**
    * Get value to Slots.
    */
-  int getSlot(int slot);
+  // int getSlot(int slot);
 
   /**
     * Callback. Invoked when any of our attributes are written via BLE.
@@ -71,7 +71,7 @@ private:
   /**
    * Sending data buffer 02.
    */
-  uint8_t txBuffer02[20];
+  // uint8_t txBuffer02[20];
 
   /**
    * Sending data buffer 03.
@@ -109,7 +109,7 @@ private:
   /**
    * Slots
    */
-  int16_t slots[4];
+  // int16_t slots[4];
 
   void setInputMode(int pinIndex);
   void setDigitalValue(int pinIndex, int value);
@@ -126,9 +126,6 @@ private:
   int convertToTilt(float radians);
 
   void composeDefaultData(uint8_t *buff);
-  // void composeTxBuffer01(void);
-  // void composeTxBuffer02(void);
-  // void composeTxBuffer03(void);
 
   void displayFriendlyName();
 
@@ -144,11 +141,6 @@ private:
     CMD_PIN_CONFIG = 0x80,
     CMD_DISPLAY_TEXT = 0x81,
     CMD_DISPLAY_LED = 0x82,
-    // CMD_PIN_INPUT = 0x90,
-    // CMD_PIN_OUTPUT = 0x91,
-    // CMD_PIN_PWM = 0x92,
-    // CMD_PIN_SERVO = 0x93,
-    // CMD_SLOT_VALUE = 0xA0
   };
 };
 

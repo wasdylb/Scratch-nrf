@@ -1,31 +1,27 @@
 #include "pxt.h"
 #include "ScratchMoreService.h"
 
-#define NOTIFY_PERIOD 10
+#define NOTIFY_PERIOD 101
 
-enum Slot {
-    //% block="slot0"
-    SLOT0 = 0,
-    //% block="slot1"
-    SLOT1 = 1,
-    //% block="slot2"
-    SLOT2 = 2,
-    //% block="slot3"
-    SLOT3 = 3,
-};
+// enum Slot {
+//     //% block="slot0"
+//     SLOT0 = 0,
+//     //% block="slot1"
+//     SLOT1 = 1,
+//     //% block="slot2"
+//     SLOT2 = 2,
+//     //% block="slot3"
+//     SLOT3 = 3,
+// };
 
 //% color=#FF9900 weight=95 icon="\uf1b0"
 namespace ScratchMore {
     ScratchMoreService* _pService = NULL;
-    Action _handler;
 
     void notifyScratch() {
         while (NULL != _pService) {
-            // run actions in the loop
-            pxt::runAction0(_handler);
             // notyfy data to Scratch
             _pService->notify();
-            // wait period
             fiber_sleep(NOTIFY_PERIOD);
         }
     }
@@ -35,32 +31,39 @@ namespace ScratchMore {
     * The handler can call ``setscratchMoreSlot`` to send any data to Scratch.
     */
     //%
-    void startScratchMoreService(Action handler) {
+    // void startScratchMoreService(Action handler) {
+    //     if (NULL != _pService) return;
+
+    //     _pService = new ScratchMoreService(uBit);
+    //     _handler = handler;
+    //     pxt::incr(_handler);
+    //     create_fiber(notifyScratch);
+    // }
+
+    void startMbitMoreService() {
         if (NULL != _pService) return;
 
-        _pService = new ScratchMoreService(uBit);
-        _handler = handler;
-        pxt::incr(_handler);
+        _pService = new MbitMoreService(uBit);
         create_fiber(notifyScratch);
     }
 
-    /**
-    * Set slot value.
-    */
-    //%
-    void setScratchMoreSlot(Slot slot, int value) {
-        if (NULL == _pService) return;
+    // /**
+    // * Set slot value.
+    // */
+    // //%
+    // void setScratchMoreSlot(Slot slot, int value) {
+    //     if (NULL == _pService) return;
 
-        _pService->setSlot((int)slot, value);
-    }
+    //     _pService->setSlot((int)slot, value);
+    // }
 
-    /**
-     * Get slot value. 
-     */
-    //%
-    int getScratchMoreSlot(Slot slot) {
-        if (NULL == _pService) return 0;
+    // /**
+    //  * Get slot value. 
+    //  */
+    // //%
+    // int getScratchMoreSlot(Slot slot) {
+    //     if (NULL == _pService) return 0;
 
-        return _pService->getSlot((int)slot);
-    }    
+    //     return _pService->getSlot((int)slot);
+    // }    
 }
