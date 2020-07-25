@@ -71,7 +71,7 @@ private:
   /**
    * Sending data buffer 02.
    */
-  // uint8_t txBuffer02[20];
+  uint8_t txBuffer02[20];
 
   /**
    * Sending data buffer 03.
