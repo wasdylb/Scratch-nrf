@@ -497,9 +497,9 @@ int ScratchMoreService::getSlot(int slotIndex)
 
 void ScratchMoreService::onBLEConnected(MicroBitEvent e)
 {
-  MicroBitImage _connected("0,0,0,0,0\n0,0,0,0,255\n0,0,0,255,0\n255,0,255,0,0\n0,255,0,0,0\n");
-  uBit.display.print(_connected);
-  uBit.sleep(500);
+  // MicroBitImage _connected("0,0,0,0,0\n0,0,0,0,255\n0,0,0,255,0\n255,0,255,0,0\n0,255,0,0,0\n");
+  // uBit.display.print(_connected);
+  // uBit.sleep(500);
   uBit.display.stopAnimation(); // To stop display friendly name.
 }
 
