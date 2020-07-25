@@ -1,6 +1,6 @@
 {
-    "name": "Scratch-nrf",
-    "version": "0.4.2",
+    "name": "pxt-scratch-more",
+    "version": "0.3.2",
     "description": "",
     "dependencies": {
         "core": "*",
@@ -12,17 +12,14 @@
         "shims.d.ts",
         "extension.ts",
         "extension.cpp",
-        "MbitMoreService.h",
-        "MbitMoreService.cpp"
+        "ScratchMoreService.h",
+        "ScratchMoreService.cpp"
     ],
     "testFiles": [
         "test.ts"
     ],
     "public": false,
     "yotta": {
-        "dependencies": {
-            "microbit": "yokobond/microbit#mbit-more"
-        },
         "config": {
             "microbit-dal": {
                 "bluetooth": {
@@ -38,7 +35,7 @@
                     "device_info_service": 0,
                     "security_level": "SECURITY_MODE_ENCRYPTION_NO_MITM"
                 },
-                "gatt_table_size": "0x340"
+                "gatt_table_size": "0x300"
             }
         }
     }

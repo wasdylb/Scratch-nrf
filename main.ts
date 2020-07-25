@@ -1,1 +1,3 @@
-MbitMore.startMbitMoreService()
+ScratchMore.startScratchMoreService(function () {
+
+})
