@@ -39,8 +39,7 @@ namespace ScratchMore {
     //     pxt::incr(_handler);
     //     create_fiber(notifyScratch);
     // }
-
-    void startMbitMoreService() {
+    void startScratchMoreService() {
         if (NULL != _pService) return;
 
         _pService = new MbitMoreService(uBit);
