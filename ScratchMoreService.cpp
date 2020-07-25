@@ -411,7 +411,7 @@ void ScratchMoreService::composeTxBuffer03()
 /**
  * Notify default micro:bit data to Scratch.
  */
-void MbitMoreService::notifyDefaultData()
+void ScratchMoreService::notifyDefaultData()
 {
   composeDefaultData(txData);
   uBit.ble->gattServer().notify(
