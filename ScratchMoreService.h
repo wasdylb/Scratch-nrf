@@ -30,6 +30,7 @@ public:
     * Notify data to Scratch3.
     */
   void notify();
+  void notifyDefaultData();
 
   /**
    * Set value to Slots.
