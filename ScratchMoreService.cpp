@@ -16,10 +16,10 @@ ScratchMoreService::ScratchMoreService(MicroBit &_uBit)
     : uBit(_uBit)
 {
   // Calibrate the compass before start bluetooth service.
-  if (!uBit.compass.isCalibrated())
-  {
-    uBit.compass.calibrate();
-  }
+  // if (!uBit.compass.isCalibrated())
+  // {
+  //   uBit.compass.calibrate();
+  // }
 
   // Initialize pin configuration.
   for (size_t i = 0; i < sizeof(gpio) / sizeof(gpio[0]); i++)
