@@ -7,6 +7,15 @@
 
 #define SCRATCH_MORE_EVT_NOTIFY 1
 
+#define MOTOR_L_A   6
+#define MOTOR_L_B   16
+#define MOTOR_R_A   9
+#define MOTOR_R_B   7
+
+#define SEVROPIN    10
+#define BUZZERPIN   0
+#define BLECONNECT  15
+
 // UUIDs for our service and characteristics
 extern const uint16_t ScratchMoreServiceUUID;
 extern const uint8_t ScratchMoreServiceTxUUID[];
@@ -139,8 +148,12 @@ private:
   enum ScratchBLECommand
   {
     CMD_PIN_CONFIG = 0x80,
-    CMD_DISPLAY_TEXT = 0x81,
-    CMD_DISPLAY_LED = 0x82,
+    CMD_PIN_INPUT = 0x79,
+    CMD_PIN_OUTPUT = 0x7D,
+    CMD_PIN_PWM = 0x7E,
+    CMD_PIN_SERVO = 0x7B,
+    // CMD_DISPLAY_TEXT = 0x81,
+    // CMD_DISPLAY_LED = 0x82,
   };
 };
 

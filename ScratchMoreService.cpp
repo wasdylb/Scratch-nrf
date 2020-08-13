@@ -4,8 +4,8 @@
   */
 #include "ScratchMoreService.h"
 
-int gpio[] = {0, 1, 2, 8, 13, 14, 15, 16};
-int analogIn[] = {0, 1, 2};
+int gpio[] = {14, 2, 12, 4, 8, 3, 13, 1};
+int analogIn[] = {2, 4, 3, 1};
 
 /**
   * Constructor.
@@ -20,6 +20,8 @@ ScratchMoreService::ScratchMoreService(MicroBit &_uBit)
   // {
   //   uBit.compass.calibrate();
   // }
+
+  uBit.display.disable();
 
   // Initialize pin configuration.
   for (size_t i = 0; i < sizeof(gpio) / sizeof(gpio[0]); i++)
@@ -92,28 +94,27 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
 
   if (params->handle == rxCharacteristicHandle && params->len > 0)
   {
-    if (data[0] == ScratchBLECommand::CMD_DISPLAY_TEXT)
-    {
-      char text[params->len];
-      // memcpy(text, &(data[1]), (params->len));
-      memcpy(text, &(data[1]), (params->len) - 1);
-      text[(params->len) - 1] = '\0';
-      ManagedString mstr(text);
-      uBit.display.scrollAsync(text, 120); // Interval is corresponding with the Scratch extension.
-    }
-    else if (data[0] == ScratchBLECommand::CMD_DISPLAY_LED)
-    {
-      uBit.display.stopAnimation();
-      for (int y = 1; y < params->len; y++)
-      {
-        for (int x = 0; x < 5; x++)
-        {
-          uBit.display.image.setPixelValue(x, y - 1, (data[y] & (0x01 << x)) ? 255 : 0);
-        }
-      }
-    }
-    /*
-    else if (data[0] == ScratchBLECommand::CMD_PIN_INPUT)
+    // if (data[0] == ScratchBLECommand::CMD_DISPLAY_TEXT)
+    // {
+    //   char text[params->len];
+    //   // memcpy(text, &(data[1]), (params->len));
+    //   memcpy(text, &(data[1]), (params->len) - 1);
+    //   text[(params->len) - 1] = '\0';
+    //   ManagedString mstr(text);
+    //   uBit.display.scrollAsync(text, 120); // Interval is corresponding with the Scratch extension.
+    // }
+    // else if (data[0] == ScratchBLECommand::CMD_DISPLAY_LED)
+    // {
+    //   uBit.display.stopAnimation();
+    //   for (int y = 1; y < params->len; y++)
+    //   {
+    //     for (int x = 0; x < 5; x++)
+    //     {
+    //       uBit.display.image.setPixelValue(x, y - 1, (data[y] & (0x01 << x)) ? 255 : 0);
+    //     }
+    //   }
+    // }
+    ]if (data[0] == ScratchBLECommand::CMD_PIN_INPUT)
     {
       setInputMode(data[1]);
     }
@@ -141,6 +142,7 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
       memcpy(&center, &(data[6]), 2);
       setServoValue((int)data[1], (int)angle, (int)range, (int)center);
     }
+    /*
     else if (data[0] == ScratchBLECommand::CMD_SLOT_VALUE)
     {
       // slotValue is read as int16_t little-endian.
@@ -379,12 +381,20 @@ void ScratchMoreService::notify()
 
 void ScratchMoreService::onBLEConnected(MicroBitEvent e)
 {
-  uBit.display.stopAnimation(); // To stop display friendly name.
+  //uBit.display.stopAnimation(); // To stop display friendly name.
+  uBit.io.pin[BLECONNECT].setDigitalValue(0);
 }
 
 void ScratchMoreService::displayFriendlyName()
 {
-  uBit.display.scrollAsync(uBit.getName(), 120);
+  if (uBit.systemTime() / 500 % 2)
+  {
+    uBit.io.pin[BLECONNECT].setDigitalValue(0);
+  }
+  else
+  {
+    uBit.io.pin[BLECONNECT].setDigitalValue(1);
+  }
 }
 
 const uint16_t ScratchMoreServiceUUID = 0xf005;
