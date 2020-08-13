@@ -114,7 +114,7 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
     //     }
     //   }
     // }
-    ]if (data[0] == ScratchBLECommand::CMD_PIN_INPUT)
+    if (data[0] == ScratchBLECommand::CMD_PIN_INPUT)
     {
       setInputMode(data[1]);
     }
