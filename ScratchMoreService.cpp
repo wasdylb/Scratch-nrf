@@ -29,6 +29,7 @@ ScratchMoreService::ScratchMoreService(MicroBit &_uBit)
   
   servoInit();
   motorInit();
+  buzzerInit();
 
   // Create the data structures that represent each of our characteristics in Soft Device.
   GattCharacteristic txCharacteristic(
@@ -118,6 +119,11 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
       memcpy(&leftspeed, &(data[1]), 2);
       memcpy(&rightspeed, &(data[3]), 2);
       setMotorValue((int)leftspeed, (int)rightspeed);
+    }
+    else if (data[0] == CMD_BUZZER) {
+      int tonevalue;
+      memcpy(&tonevalue, &(data[2]), 2);
+      setBuzzerValue(data[1], tonevalue);
     }
   }
 }
@@ -257,6 +263,11 @@ void ScratchMoreService::motorInit()
     uBit.io.pin[MOTOR_R_B].setAnalogValue(0);
 }
 
+void ScratchMoreService::buzzerInit()
+{
+    uBit.io.pin[BUZZERPIN].setAnalogValue(0);
+}
+
 void ScratchMoreService::setInputMode(int pinIndex)
 {
   uBit.io.pin[pinIndex].getDigitalValue(); // Configure the pin as input, but the value is not used.
@@ -303,6 +314,16 @@ void ScratchMoreService::setMotorValue(int valueL, int valueR)
     } else {
         uBit.io.pin[MOTOR_R_A].setAnalogValue(valueR);
         uBit.io.pin[MOTOR_R_B].setAnalogValue(0);
+    }
+}
+
+void ScratchMoreService::setBuzzerValue(int pinIndex, int value)
+{
+    if (value == 0) {
+        uBit.io.pin[pinIndex].setAnalogValue(0);
+    } else {
+        uBit.io.pin[pinIndex].setAnalogValue(512);
+        uBit.io.pin[pinIndex].setAnalogPeriodUs(int(1000000/value)); //T = 1/f
     }
 }
 
@@ -363,7 +384,6 @@ void ScratchMoreService::notify()
 
 void ScratchMoreService::onBLEConnected(MicroBitEvent e)
 {
-  //uBit.display.stopAnimation(); // To stop display friendly name.
   uBit.io.pin[BLECONNECT].setDigitalValue(0);
 }
 

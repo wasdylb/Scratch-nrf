@@ -101,11 +101,13 @@ private:
 
   void servoInit();
   void motorInit();
+  void buzzerInit();
   void setInputMode(int pinIndex);
   void setDigitalValue(int pinIndex, int value);
   void setAnalogValue(int pinIndex, int value);
   void setServoValue(int pinIndex, int angle, int range, int center);
   void setMotorValue(int valueL, int valueR);
+  void setBuzzerValue(int pinIndex, int value);
 
   void onButtonChanged(MicroBitEvent);
   void onAccelerometerChanged(MicroBitEvent);
