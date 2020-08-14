@@ -113,6 +113,12 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
       memcpy(&center, &(data[6]), 2);
       setServoValue((int)data[1], (int)angle, (int)range, (int)center);
     }
+    else if (data[0] == ScratchBLECommand::CMD_MOTOR) {
+      int16_t leftspeed, rightspeed;
+      memcpy(&leftspeed, &(data[1]), 2);
+      memcpy(&rightspeed, &(data[3]), 2);
+      setMotorValue((int)leftspeed, (int)rightspeed);
+    }
   }
 }
 
@@ -303,6 +309,7 @@ void ScratchMoreService::setMotorValue(int valueL, int valueR)
 void ScratchMoreService::composeDefaultData(uint8_t *buff)
 {
   updateDigitalValues();
+  updateAnalogValues();
 
   // Tilt value is sent as int16_t big-endian.
   int16_t tiltX = (int16_t)convertToTilt(uBit.accelerometer.getRollRadians());
