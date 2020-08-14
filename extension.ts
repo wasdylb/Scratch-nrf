@@ -15,7 +15,7 @@ namespace ScratchMore {
     /**
     * Starts BLE services for Scratch Microbit-More extension.
     */
-    //% blockId=scratchmore_startScratchMoreService block="Scratch More service
+    //% blockId=scratchmore_startScratchMoreService block="Scratch service"
     //% shim=ScratchMore::startScratchMoreService
     export function startService():void {
         console.log("Microbit-More started");

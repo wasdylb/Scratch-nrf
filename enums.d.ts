@@ -5,10 +5,6 @@ declare namespace ScratchMore {
 }
 
 
-/**
- * Slots
- */
-
 declare const enum ScratchBLECommand {
     CMD_PIN_INPUT = 0x79,
     CMD_PIN_MOTOR = 0x7A,

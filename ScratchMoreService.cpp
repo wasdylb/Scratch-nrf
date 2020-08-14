@@ -121,7 +121,7 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
       setMotorValue((int)leftspeed, (int)rightspeed);
     }
     else if (data[0] == ScratchBLECommand::CMD_PIN_BUZZER) {
-      int tonevalue;
+      int16_t tonevalue;
       memcpy(&tonevalue, &(data[2]), 2);
       setBuzzerValue(data[1], tonevalue);
     }
@@ -322,7 +322,7 @@ void ScratchMoreService::setBuzzerValue(int pinIndex, int value)
     if (value == 0) {
         uBit.io.pin[pinIndex].setAnalogValue(0);
     } else {
-        uBit.io.pin[pinIndex].setAnalogValue(512);
+        uBit.io.pin[pinIndex].setAnalogValue(128);
         uBit.io.pin[pinIndex].setAnalogPeriodUs(int(1000000/value)); //T = 1/f
     }
 }
