@@ -120,7 +120,7 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
       memcpy(&rightspeed, &(data[3]), 2);
       setMotorValue((int)leftspeed, (int)rightspeed);
     }
-    else if (data[0] == CMD_BUZZER) {
+    else if (data[0] == ScratchBLECommand::CMD_PIN_BUZZER) {
       int tonevalue;
       memcpy(&tonevalue, &(data[2]), 2);
       setBuzzerValue(data[1], tonevalue);

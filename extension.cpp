@@ -3,7 +3,7 @@
 
 #define NOTIFY_PERIOD 50
 
-//% color=#FF00FF weight=95 icon="\uf1b0"
+//% color=#00FFFF weight=95 icon="\uf1b0"
 namespace ScratchMore {
     ScratchMoreService* _pService = NULL;
 
