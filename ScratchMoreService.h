@@ -70,25 +70,10 @@ private:
   uint8_t txDataFormat;
 
   // Sending data to Scratch3.
-  uint8_t txData[20];
-
-  /**
-   * Sending data buffer 01.
-   */
-  // uint8_t txBuffer01[20];
-
-  /**
-   * Sending data buffer 02.
-   */
-  // uint8_t txBuffer02[20];
-
-  /**
-   * Sending data buffer 03.
-   */
-  // uint8_t txBuffer03[20];
+  uint8_t txData[16];
 
   // Recieving buffer from Scratch3.
-  uint8_t rxBuffer[20];
+  uint8_t rxBuffer[8];
 
   /**
    * Button state.
@@ -111,19 +96,16 @@ private:
    */
   int compassHeading;
 
-  uint32_t digitalValues;
+  int8_t digitalValues;
+  uint16_t analogValues[4];
 
-  uint16_t analogValues[6];
-
-  /**
-   * Slots
-   */
-  // int16_t slots[4];
-
+  void servoInit();
+  void motorInit();
   void setInputMode(int pinIndex);
   void setDigitalValue(int pinIndex, int value);
   void setAnalogValue(int pinIndex, int value);
   void setServoValue(int pinIndex, int angle, int range, int center);
+  void setMotorValue(int valueL, int valueR);
 
   void onButtonChanged(MicroBitEvent);
   void onAccelerometerChanged(MicroBitEvent);
@@ -136,7 +118,7 @@ private:
 
   void composeDefaultData(uint8_t *buff);
 
-  void displayFriendlyName();
+  void disConnected();
 
   // microbit runtime instance
   MicroBit &uBit;
@@ -147,13 +129,12 @@ private:
 
   enum ScratchBLECommand
   {
-    CMD_PIN_CONFIG = 0x80,
     CMD_PIN_INPUT = 0x79,
+    CMD_PIN_MOTOR = 0x7A,
+    CMD_PIN_SERVO = 0x7B,
+    CMD_PIN_BUZZER = 0x7C,
     CMD_PIN_OUTPUT = 0x7D,
     CMD_PIN_PWM = 0x7E,
-    CMD_PIN_SERVO = 0x7B,
-    // CMD_DISPLAY_TEXT = 0x81,
-    // CMD_DISPLAY_LED = 0x82,
   };
 };
 

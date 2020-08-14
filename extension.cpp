@@ -1,7 +1,7 @@
 #include "pxt.h"
 #include "ScratchMoreService.h"
 
-#define NOTIFY_PERIOD 101
+#define NOTIFY_PERIOD 50
 
 //% color=#FF00FF weight=95 icon="\uf1b0"
 namespace ScratchMore {

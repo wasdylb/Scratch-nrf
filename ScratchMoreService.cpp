@@ -15,12 +15,6 @@ int analogIn[] = {2, 4, 3, 1};
 ScratchMoreService::ScratchMoreService(MicroBit &_uBit)
     : uBit(_uBit)
 {
-  // Calibrate the compass before start bluetooth service.
-  // if (!uBit.compass.isCalibrated())
-  // {
-  //   uBit.compass.calibrate();
-  // }
-
   uBit.display.disable();
 
   // Initialize pin configuration.
@@ -32,6 +26,9 @@ ScratchMoreService::ScratchMoreService(MicroBit &_uBit)
   {
     setInputMode(analogIn[i]);
   }
+  
+  servoInit();
+  motorInit();
 
   // Create the data structures that represent each of our characteristics in Soft Device.
   GattCharacteristic txCharacteristic(
@@ -94,26 +91,6 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
 
   if (params->handle == rxCharacteristicHandle && params->len > 0)
   {
-    // if (data[0] == ScratchBLECommand::CMD_DISPLAY_TEXT)
-    // {
-    //   char text[params->len];
-    //   // memcpy(text, &(data[1]), (params->len));
-    //   memcpy(text, &(data[1]), (params->len) - 1);
-    //   text[(params->len) - 1] = '\0';
-    //   ManagedString mstr(text);
-    //   uBit.display.scrollAsync(text, 120); // Interval is corresponding with the Scratch extension.
-    // }
-    // else if (data[0] == ScratchBLECommand::CMD_DISPLAY_LED)
-    // {
-    //   uBit.display.stopAnimation();
-    //   for (int y = 1; y < params->len; y++)
-    //   {
-    //     for (int x = 0; x < 5; x++)
-    //     {
-    //       uBit.display.image.setPixelValue(x, y - 1, (data[y] & (0x01 << x)) ? 255 : 0);
-    //     }
-    //   }
-    // }
     if (data[0] == ScratchBLECommand::CMD_PIN_INPUT)
     {
       setInputMode(data[1]);
@@ -124,33 +101,18 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
     }
     else if (data[0] == ScratchBLECommand::CMD_PIN_PWM)
     {
-      // value is read as uint16_t little-endian.
       int value;
       memcpy(&value, &(data[2]), 2);
       setAnalogValue(data[1], value);
     }
     else if (data[0] == ScratchBLECommand::CMD_PIN_SERVO)
     {
-      // angle is read as uint16_t little-endian.
-      uint16_t angle;
+      uint16_t angle, range, center;
       memcpy(&angle, &(data[2]), 2);
-      // range is read as uint16_t little-endian.
-      uint16_t range;
       memcpy(&range, &(data[4]), 2);
-      // center is read as uint16_t little-endian.
-      uint16_t center;
       memcpy(&center, &(data[6]), 2);
       setServoValue((int)data[1], (int)angle, (int)range, (int)center);
     }
-    /*
-    else if (data[0] == ScratchBLECommand::CMD_SLOT_VALUE)
-    {
-      // slotValue is read as int16_t little-endian.
-      int16_t slotValue;
-      memcpy(&slotValue, &(data[2]), 2);
-      setSlot(data[1], slotValue);
-    }
-    */
   }
 }
 
@@ -259,8 +221,7 @@ void ScratchMoreService::updateDigitalValues()
   {
     if (uBit.io.pin[gpio[i]].isInput())
     {
-      digitalValues =
-          digitalValues | (((uBit.io.pin[gpio[i]].getDigitalValue(PullUp) == 1 ? 0 : 1)) << gpio[i]);
+      digitalValues |= ((uBit.io.pin[gpio[i]].getDigitalValue(PullUp)) << i);
     }
   }
 }
@@ -275,6 +236,19 @@ void ScratchMoreService::updateAnalogValues()
       analogValues[i] = (uint16_t)uBit.io.pin[analogIn[i]].getAnalogValue();
     }
   }
+}
+
+void ScratchMoreService::servoInit()
+{
+    uBit.io.pin[SEVROPIN].setServoValue(15);
+}
+
+void ScratchMoreService::motorInit()
+{
+    uBit.io.pin[MOTOR_L_A].setAnalogValue(0);
+    uBit.io.pin[MOTOR_L_B].setAnalogValue(0);
+    uBit.io.pin[MOTOR_R_A].setAnalogValue(0);
+    uBit.io.pin[MOTOR_R_B].setAnalogValue(0);
 }
 
 void ScratchMoreService::setInputMode(int pinIndex)
@@ -308,25 +282,47 @@ void ScratchMoreService::setServoValue(int pinIndex, int angle, int range, int c
   }
 }
 
+void ScratchMoreService::setMotorValue(int valueL, int valueR)
+{
+    if(valueL<0) {
+        uBit.io.pin[MOTOR_L_A].setAnalogValue(0);
+        uBit.io.pin[MOTOR_L_B].setAnalogValue(-valueL);
+    } else {
+        uBit.io.pin[MOTOR_L_A].setAnalogValue(valueL);
+        uBit.io.pin[MOTOR_L_B].setAnalogValue(0);
+    }
+    if(valueR<0) {
+        uBit.io.pin[MOTOR_R_A].setAnalogValue(0);
+        uBit.io.pin[MOTOR_R_B].setAnalogValue(-valueR);
+    } else {
+        uBit.io.pin[MOTOR_R_A].setAnalogValue(valueR);
+        uBit.io.pin[MOTOR_R_B].setAnalogValue(0);
+    }
+}
+
 void ScratchMoreService::composeDefaultData(uint8_t *buff)
 {
   updateDigitalValues();
 
   // Tilt value is sent as int16_t big-endian.
   int16_t tiltX = (int16_t)convertToTilt(uBit.accelerometer.getRollRadians());
-  // int16_t tiltX = 0;
   buff[0] = (tiltX >> 8) & 0xFF;
   buff[1] = tiltX & 0xFF;
   int16_t tiltY = (int16_t)convertToTilt(uBit.accelerometer.getPitchRadians());
-  // int16_t tiltY = 0;
   buff[2] = (tiltY >> 8) & 0xFF;
   buff[3] = tiltY & 0xFF;
-  buff[4] = (uint8_t)buttonAState;
+  buff[4] = (uint8_t)gesture;
   buff[5] = (uint8_t)buttonBState;
-  buff[6] = (uint8_t)((digitalValues >> 0) & 1);
-  buff[7] = (uint8_t)((digitalValues >> 1) & 1);
-  buff[8] = (uint8_t)((digitalValues >> 2) & 1);
-  buff[9] = (uint8_t)gesture;
+  buff[6] = (uint8_t)buttonAState;
+  buff[7] = (uint8_t)digitalValues;
+  buff[8] = (analogValues[0] >> 8) & 0xFF;
+  buff[9] = analogValues[0] & 0xFF;
+  buff[10] = (analogValues[1] >> 8) & 0xFF;
+  buff[11] = analogValues[1] & 0xFF;
+  buff[12] = (analogValues[2] >> 8) & 0xFF;
+  buff[13] = analogValues[2] & 0xFF;
+  buff[14] = (analogValues[3] >> 8) & 0xFF;
+  buff[15] = analogValues[3] & 0xFF;
 }
 
 /**
@@ -354,30 +350,9 @@ void ScratchMoreService::notify()
   }
   else
   {
-    displayFriendlyName();
+    disConnected();
   }
 }
-
-/**
- * Set value to Slots.
- * slot (0, 1, 2, 3)
- */
-// void ScratchMoreService::setSlot(int slotIndex, int value)
-// {
-//   // value (-32768 to 32767) is sent as int16_t little-endian.
-//   int16_t slotData = (int16_t)value;
-//   memcpy(&(txBuffer02[10 + (slotIndex * 2)]), &slotData, 2);
-//   slots[slotIndex] = slotData;
-// }
-
-/**
- * Get value of a Slot.
- * slot (0, 1, 2, 3)
- */
-// int ScratchMoreService::getSlot(int slotIndex)
-// {
-//   return (int)(slots[slotIndex]);
-// }
 
 void ScratchMoreService::onBLEConnected(MicroBitEvent e)
 {
@@ -385,7 +360,7 @@ void ScratchMoreService::onBLEConnected(MicroBitEvent e)
   uBit.io.pin[BLECONNECT].setDigitalValue(0);
 }
 
-void ScratchMoreService::displayFriendlyName()
+void ScratchMoreService::disConnected()
 {
   if (uBit.systemTime() / 500 % 2)
   {
