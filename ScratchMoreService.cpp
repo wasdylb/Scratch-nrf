@@ -113,7 +113,7 @@ void ScratchMoreService::onDataWritten(const GattWriteCallbackParams *params)
       memcpy(&center, &(data[6]), 2);
       setServoValue((int)data[1], (int)angle, (int)range, (int)center);
     }
-    else if (data[0] == ScratchBLECommand::CMD_MOTOR) {
+    else if (data[0] == ScratchBLECommand::CMD_PIN_MOTOR) {
       int16_t leftspeed, rightspeed;
       memcpy(&leftspeed, &(data[1]), 2);
       memcpy(&rightspeed, &(data[3]), 2);
